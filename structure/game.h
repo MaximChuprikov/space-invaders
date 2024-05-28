@@ -18,6 +18,11 @@ public:
     int highscore;
     Music music;
     bool isPlayerWon;
+    void InitGame();
+    bool isGameStarted;
+    bool isGameStartMenuActive;
+    void Reset();
+    bool isGameOver;
 private:
     void DeleteInactiveLasers();
     std::vector<Obstacle> CreateObstacles();
@@ -27,6 +32,7 @@ private:
     void AlienShootLaser();
     void CheckForCollisions();
     void GameOver();
+    void CreateGameObjects();
 
     Spaceship spaceship;
     std::vector<Obstacle> obstacles;
@@ -39,8 +45,8 @@ private:
     void checkForHighscore();
     void saveHighscoreToFile(int highscore);
     int loadHighscoreFromFile();
-    void Reset();
-    void InitGame();
+
+
     Sound explosionSound;
     void ResetHighscore();
 
