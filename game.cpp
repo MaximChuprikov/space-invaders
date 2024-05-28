@@ -3,6 +3,10 @@
 #include <fstream>
 
 Game::Game() {
+    isGameStartMenuActive = true;
+    run = false;
+    isGameStarted = false;
+    isGameOver = false;
     InitGame();
 }
 
@@ -13,37 +17,39 @@ Game::~Game() {
 }
 
 void Game::Update() {
-    if (run) {
-        for(auto& laser: spaceship.lasers) {
-            laser.Update();
-        }
-        MoveAliens();
-
-        AlienShootLaser();
-
-        for (auto& laser: alienLasers) {
-            laser.Update();
-        }
-
-        DeleteInactiveLasers();
-
-        CheckForCollisions();
-        // Обновление состояния тряски для всех инопланетян
-        for (auto& alien : aliens) {
-            alien.UpdateShake(GetFrameTime());
-        }
-        for (auto& alien : asteroids) {
-            alien.UpdateShake(GetFrameTime());
-        }
-        if (aliens.empty() && asteroids.empty()) {
-            isPlayerWon = true;
-            run = false;
-            StopMusicStream(music);
+    if (!run) {
+        if (IsKeyDown(KEY_ENTER)) {
+            run = true; // Установить run в true при нажатии Enter
+            InitGame(); // Инициализировать игру
         }
     } else {
-        if(IsKeyDown(KEY_ENTER)) {
-            Reset();
-            InitGame();
+        if (run) {
+            for(auto& laser: spaceship.lasers) {
+                laser.Update();
+            }
+            MoveAliens();
+
+            AlienShootLaser();
+
+            for (auto& laser: alienLasers) {
+                laser.Update();
+            }
+
+            DeleteInactiveLasers();
+
+            CheckForCollisions();
+            // Обновление состояния тряски для всех инопланетян
+            for (auto& alien : aliens) {
+                alien.UpdateShake(GetFrameTime());
+            }
+            for (auto& alien : asteroids) {
+                alien.UpdateShake(GetFrameTime());
+            }
+            if (aliens.empty() && asteroids.empty()) {
+                isPlayerWon = true;
+                run = false;
+                StopMusicStream(music);
+            }
         }
     }
 }
@@ -120,7 +126,7 @@ std::pair<std::vector<Alien>, std::vector<Alien>> Game::CreateAliens() {
         for(int column = 0; column < 13; column++) {
             if ((row + column) % 2 == 0 && row == 0) {
                 alienType = 4;
-                float x = column * 50 + 99;
+                float x = column * 50 + 75;
                 float y = row * 50 + 100;
                 aliens.push_back(Alien(alienType, {x, y}));
             } else if ((row + column) % 2 == 0 && row != 0) {
@@ -131,7 +137,7 @@ std::pair<std::vector<Alien>, std::vector<Alien>> Game::CreateAliens() {
                 } else {
                     alienType = 1;
                 }
-                float x = column * 50 + 99;
+                float x = column * 50 + 75;
                 float y = row * 50 + 110;
                 asteroids.push_back(Alien(alienType, {x, y}));
             }
@@ -303,13 +309,21 @@ void Game::CheckForCollisions() {
 
 void Game::GameOver() {
     run = false;
+    isGameOver = true;
     StopMusicStream(music);
 }
-
-void Game::InitGame() {
+void Game::CreateGameObjects() {
     obstacles = CreateObstacles();
     aliens = CreateAliens().first;
     asteroids = CreateAliens().second;
+}
+void Game::InitGame() {
+    if (!isGameStartMenuActive) {
+        CreateGameObjects();
+        isGameStartMenuActive = false;
+        music = LoadMusicStream("../Sounds/music.ogg");
+        explosionSound = LoadSound("../Sounds/explosion.ogg");
+    }
     aliensDirection = 0.4;
     timeLastAlienFired = 0.0;
     lives = 3;
@@ -317,8 +331,8 @@ void Game::InitGame() {
     highscore = loadHighscoreFromFile();
     run = true;
     isPlayerWon = false;
-    music = LoadMusicStream("/Users/max/CLionProjects/untitled1/Sounds/music.ogg");
-    explosionSound = LoadSound("/Users/max/CLionProjects/untitled1/Sounds/explosion.ogg");
+    isGameStartMenuActive = false;
+    isGameOver = false; // Сбросьте isGameOver как false
     PlayMusicStream(music);
 }
 
@@ -330,7 +344,7 @@ void Game::checkForHighscore() {
 }
 
 void Game::saveHighscoreToFile(int highscore) {
-    std::ofstream highscoreFile("highscore.txt");
+    std::ofstream highscoreFile("./highscore.txt");
     if(highscoreFile.is_open()) {
         highscoreFile << highscore;
         highscoreFile.close();
@@ -341,7 +355,7 @@ void Game::saveHighscoreToFile(int highscore) {
 
 int Game::loadHighscoreFromFile() {
     int loadedHighscore = 0;
-    std::ifstream highscoreFile("highscore.txt");
+    std::ifstream highscoreFile("./highscore.txt");
     if(highscoreFile.is_open()) {
         highscoreFile >> loadedHighscore;
         highscoreFile.close();
