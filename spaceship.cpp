@@ -3,15 +3,11 @@
 Color white = {255, 255, 255, 255};
 Spaceship::Spaceship()
 {
-    image = LoadTexture("/Users/max/CLionProjects/space invaders/images/spaceship.png");
+    image = LoadTexture("../images/spaceship.png");
     position.x = (GetScreenWidth() - image.width)/2;
     position.y = GetScreenHeight() - image.height - 100;
     lastFireTime = 0.0;
-    laserSound = LoadSound("/Users/max/CLionProjects/untitled1/Sounds/laser.ogg");
-    collisionRect.x = position.x + 20;  // Отступ слева 20 пикселей
-    collisionRect.y = position.y + 20;  // Отступ сверху 20 пикселей
-    collisionRect.width = image.width - 50;  // Ширина на 40 пикселей меньше
-    collisionRect.height = image.height - 100;  // Высота на 40 пикселей меньше
+    laserSound = LoadSound("../Sounds/laser.ogg");
 }
 
 Spaceship::~Spaceship() {
@@ -48,7 +44,7 @@ void Spaceship::FireLaser()
 }
 
 Rectangle Spaceship::getRect() {
-    return {position.x, position.y, float(image.width - 50), float(image.height - 50)};
+    return {position.x, position.y, float(image.width), float(image.height - 20)};
 }
 void Spaceship::Reset() {
     position.x = (GetScreenWidth() - image.width) / 2.0f;
