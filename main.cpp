@@ -26,7 +26,7 @@ int main() {
     SetTargetFPS(90);
 
     Game game;
-    game.isGameStartMenuActive = true;
+
 
 
     while (!WindowShouldClose()) {
@@ -51,24 +51,30 @@ int main() {
             DrawTextEx(font, "Press Enter to Play", {100, 350}, 65, 2, green);
             DrawRectangleRoundedLines({10, 10, 780, 780}, 0.18f, 20, 2, green);
             DrawLineEx({25,730}, {775, 730}, 3, green);
-        } else if (game.run && !game.isPlayerWon) {
-            DrawTextEx(font, "GAME!", {570, 740}, 34, 2, green);
-            DrawRectangleRoundedLines({10, 10, 780, 780}, 0.18f, 20, 2, green);
-            DrawLineEx({25,730}, {775, 730}, 3, green);
-        } else if (game.isPlayerWon) { // Проверка на победу
-            DrawTextEx(font, "YOU WIN!", {275, 350}, 65, 2, gold);
-            DrawRectangleRoundedLines({10, 10, 780, 780}, 0.18f, 20, 2, gold);
-            DrawLineEx({25, 730}, {775, 730}, 3, gold);
-        } else if (!game.run && game.isGameOver) {
-            DrawTextEx(font, "GAME OVER", {570, 740}, 34, 2, red);
-            DrawRectangleRoundedLines({10, 10, 780, 780}, 0.18f, 20, 2, red);
-            DrawLineEx({25,730}, {775, 730}, 3, red);
-        }
+        } else {
+            if (game.run && !game.isPlayerWon) {
+                DrawTextEx(font, "GAME!", {570, 740}, 34, 2, green);
+                DrawRectangleRoundedLines({10, 10, 780, 780}, 0.18f, 20, 2, green);
+                DrawLineEx({25,730}, {775, 730}, 3, green);
+            } else if (game.isPlayerWon) { // Проверка на победу
+                DrawTextEx(font, "YOU WIN!", {275, 350}, 65, 2, gold);
+                DrawRectangleRoundedLines({10, 10, 780, 780}, 0.18f, 20, 2, gold);
+                DrawLineEx({25, 730}, {775, 730}, 3, gold);
+                DrawTextEx(font, "Press Enter to Play Again", {170, 80}, 40, 2, GREEN);
+                DrawTextEx(font, "Press Esc to Leave", {230, 120}, 40, 2, red);
+            } else if (!game.run && game.isGameOver) {
+                DrawTextEx(font, "GAME OVER", {570, 740}, 34, 2, red);
+                DrawTextEx(font, "Press Enter to Play Again", {170, 80}, 40, 2, GREEN);
+                DrawTextEx(font, "Press Esc to Leave", {230, 120}, 40, 2, red);
+                DrawRectangleRoundedLines({10, 10, 780, 780}, 0.18f, 20, 2, red);
+                DrawLineEx({25,730}, {775, 730}, 3, red);
+            }
             float x = 50.0;
             for(int i = 0; i < game.lives; i ++) {
                 DrawTextureV(spaceshipImage, {x, 745}, WHITE);
                 x += 50;
             }
+        }
 
             DrawTextEx(font, "SCORE", {50, 15}, 34, 2, green);
             std::string scoreText = FormatWithLeadingZeros(game.score, 5);
